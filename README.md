@@ -10,3 +10,5 @@ Conway's game consist of a grid of square 'cells' that can be either dead (grey 
 2. Any cell that is alive with two or three neighbors, stays alive in the next generation.
 3. Overpopulation: Any cell that is alive with more than three neighbors dies.
 4. Reproduction: Any dead cell with exactly three live neighbors becomes alive.
+
+For more information check this page out: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life

@@ -8,6 +8,24 @@ let genNum = 0;
 //( a )Examine state of all eight neighbors 
 //(it's up to you whether you want cells to wrap around 
 //the grid and consider cells on the other side or not)
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function createGrid(points) {
+  const rows = [];
+  let i = 0;
+  for (i = 0; i < numRows; i++) {
+    rows.push(Array.from(Array(numCols), () => 0));
+  }
+  var coordinate;
+  for (coordinate of points) {
+    rows[coordinate[0]][coordinate[1]] = 1
+  }
+
+  return rows
+}
+
 const opperations = [
   [0, 1],
   [0, -1],
@@ -19,11 +37,7 @@ const opperations = [
   [-1, 0]
 ]
 const clearGrid = () => {
-  const rows = [];
-    for (let i = 0; i < numRows; i++) {
-      rows.push(Array.from(Array(numCols), () => 0));
-    }
-    return rows
+  return createGrid([]);
 }
 
 function App() {
@@ -88,8 +102,51 @@ function App() {
         {running ? "End" : "Begin"}
       </button>
       <button
+        onClick={()=> {
+          const rows = [];
+          for (let i = 0; i < numRows; i++) {
+            rows.push(Array.from(Array(numCols), () => Math.round(Math.random())));
+          }
+          setGrid(rows)
+        }}>
+        Random
+      </button>
+
+      <select id="first-choice" onChange={() => {
+        const dropdown = document.getElementById("first-choice");
+        const value = dropdown.options[dropdown.selectedIndex].value;
+        const scenarios = {
+          "Glider" : [[9, 12], [10,10], [11, 11], [11, 12], [10, 12]],
+          "Blinker" : [[10, 10], [10, 11], [10, 12]]
+        }
+        setGrid(createGrid(scenarios[value]));
+      }}>
+  <option selected value="base">Please Select</option>
+  <option value="Glider">
+        Glider
+   </option>
+   <option value="Blinker">
+        Blinker
+   </option>
+  
+</select>
+      
+ 
+ 
+
+
+    
+      <button
+      onClick={()=> {
+        
+      }}>
+        Set Speed
+      </button>
+
+      <button
         onClick={() => {
           setGrid(clearGrid())
+          {genNum = 0}
         }}
         >
           Clear
@@ -112,8 +169,8 @@ function App() {
                 setGrid(newGrid)
               }}}
               style={{
-                width: 25,
-                height: 25, backgroundColor: grid[i][k] ? 'pink' : undefined,
+                width: 20,
+                height: 20, backgroundColor: grid[i][k] ? 'pink' : undefined,
                 border: 'solid 1px white'
               }}
             />))}
