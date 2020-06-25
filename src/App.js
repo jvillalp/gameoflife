@@ -3,8 +3,11 @@ import produce from 'immer';
 import './App.css';
 
 const numRows = 30;
-const numCols = 50;
+const numCols = 40;
 let genNum = 0;
+//( a )Examine state of all eight neighbors 
+//(it's up to you whether you want cells to wrap around 
+//the grid and consider cells on the other side or not)
 const opperations = [
   [0, 1],
   [0, -1],
@@ -36,12 +39,12 @@ function App() {
     if (!runningRef.current) {
       return;
     }
-    //simulation code
+    //( b ) simulation code - Apply rules of life to determine if this cell will change states
     setGrid(g => {
       genNum = genNum +1;
       console.log(genNum)
       //produce will set a new copy of grid and update new copy to setgrid 
-      return produce(g, gridCopy => {
+      return produce(g, nextGen => {
         for (let i = 0; i < numRows; i++) {
           for (let k = 0; k < numCols; k++) {
             let neigbors = 0;
@@ -54,10 +57,10 @@ function App() {
             })
             //determines if a cell becomes zero
             if (neigbors < 2 || neigbors > 3) {
-              gridCopy[i][k] = 0;
+              nextGen[i][k] = 0;
               //determines if a cell becomes one
             } else if (g[i][k] === 0 && neigbors === 3) {
-              gridCopy[i][k] = 1;
+              nextGen[i][k] = 1;
             }
           }
         }
