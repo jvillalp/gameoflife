@@ -117,31 +117,44 @@ function App() {
         const value = dropdown.options[dropdown.selectedIndex].value;
         const scenarios = {
           "Glider" : [[9, 12], [10,10], [11, 11], [11, 12], [10, 12]],
-          "Blinker" : [[10, 10], [10, 11], [10, 12]]
+          "Blinker" : [[10, 10], [10, 11], [10, 12]],
+          "Toad" : [[10, 10], [10, 11], [10, 12], [11, 9], [11, 10], [11, 11]]
         }
         setGrid(createGrid(scenarios[value]));
       }}>
-  <option selected value="base">Please Select</option>
+  <option selected value="base">Select Starting Point</option>
   <option value="Glider">
         Glider
    </option>
    <option value="Blinker">
         Blinker
    </option>
-  
+   <option value="Toad">
+        Toad
+   </option>
 </select>
-      
- 
- 
-
-
     
-      <button
-      onClick={()=> {
-        
+<select id="set-speed" onChange={() => {
+        const dropdown = document.getElementById("set-speed");
+        const speedValue = dropdown.options[dropdown.selectedIndex].value;
+        const speedScenarios = {
+          "Slow" : setTimeout(runGameofLife, 500),
+          "Normal" : [[10, 10], [10, 11], [10, 12]],
+          "Fast" : [[10, 10], [10, 11], [10, 12], [11, 9], [11, 10], [11, 11]]
+        }
+        setGrid(createGrid(speedScenarios[speedValue]));
       }}>
-        Set Speed
-      </button>
+  <option selected value="base">Select Speed</option>
+  <option value="Slow">
+        Slow
+   </option>
+   <option value="Normal">
+        Normal
+   </option>
+   <option value="Fast">
+        Fast
+   </option>
+</select>
 
       <button
         onClick={() => {

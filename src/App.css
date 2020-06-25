@@ -13,26 +13,31 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-
-.dropbtn {
-  background-color: #3498DB;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
+h1{
+  margin:0 0 1% 0 ;
+  color:pink;
 }
 
-.dropbtn:hover, .dropbtn:focus {
+button, select {
+  background-color: pink;
+  color: #282c34;
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 1%;
+}
+
+button:hover, button:focus {
   background-color: #2980B9;
 }
 
-.dropdown {
+option {
   position: relative;
   display: inline-block;
 }
 
-.dropdown-content {
+.option-content {
   display: none;
   position: absolute;
   background-color: #f1f1f1;
