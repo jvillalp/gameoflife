@@ -4,6 +4,7 @@ import './App.css';
 
 const numRows = 30;
 const numCols = 50;
+let genNum = 0;
 const opperations = [
   [0, 1],
   [0, -1],
@@ -26,13 +27,15 @@ function App() {
 
   const runningRef = useRef(running);
   runningRef.current = running
-
+  // console.log(running)
   const runGameofLife = useCallback(() => {
     if (!runningRef.current) {
       return;
     }
     //simulation code
     setGrid(g => {
+      genNum = genNum +1;
+      console.log(genNum)
       //produce will set a new copy of grid and update new copy to setgrid 
       return produce(g, gridCopy => {
         for (let i = 0; i < numRows; i++) {
@@ -62,6 +65,8 @@ function App() {
 
   return (
     <div className="App">
+      
+      <h1>Generation: {genNum}</h1>
       <button
         onClick={() => {
           setRunning(!running);
@@ -75,22 +80,24 @@ function App() {
       </button>
       <header className="App-header" style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${numCols}, 20px)`
+        gridTemplateColumns: `repeat(${numCols}, 25px)`
       }}>
         {grid.map((rows, i) =>
           rows.map((col, k) =>
             <div
               key={`${i}-${k}`}
+              
               onClick={() => {
-                const newGrid = produce(grid, gridCopy => {
+                if(!running){
+                  const newGrid = produce(grid, gridCopy => {
                   gridCopy[i][k] = grid[i][k] ? 0 : 1;
 
                 });
                 setGrid(newGrid)
-              }}
+              }}}
               style={{
-                width: 20,
-                height: 20, backgroundColor: grid[i][k] ? 'pink' : undefined,
+                width: 25,
+                height: 25, backgroundColor: grid[i][k] ? 'pink' : undefined,
                 border: 'solid 1px white'
               }}
             />))}
