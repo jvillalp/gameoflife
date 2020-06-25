@@ -15,13 +15,17 @@ const opperations = [
   [1, 0],
   [-1, 0]
 ]
-function App() {
-  const [grid, setGrid] = useState(() => {
-    const rows = [];
+const clearGrid = () => {
+  const rows = [];
     for (let i = 0; i < numRows; i++) {
       rows.push(Array.from(Array(numCols), () => 0));
     }
     return rows
+}
+
+function App() {
+  const [grid, setGrid] = useState(() => {
+    return clearGrid()
   });
   const [running, setRunning] = useState(false);
 
@@ -73,10 +77,19 @@ function App() {
           if (!running) {
             runningRef.current = true;
             runGameofLife()
+          }else{
+            runningRef.current = false
           }
         }}
       >
         {running ? "End" : "Begin"}
+      </button>
+      <button
+        onClick={() => {
+          setGrid(clearGrid())
+        }}
+        >
+          Clear
       </button>
       <header className="App-header" style={{
         display: 'grid',
