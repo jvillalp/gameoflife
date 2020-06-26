@@ -5,13 +5,6 @@ import './App.css';
 const numRows = 30;
 const numCols = 40;
 let genNum = 0;
-//( a )Examine state of all eight neighbors 
-//(it's up to you whether you want cells to wrap around 
-//the grid and consider cells on the other side or not)
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
 function createGrid(points) {
   const rows = [];
   let i = 0;
@@ -25,7 +18,9 @@ function createGrid(points) {
 
   return rows
 }
-
+//( a )Examine state of all eight neighbors 
+//(it's up to you whether you want cells to wrap around 
+//the grid and consider cells on the other side or not)
 const opperations = [
   [0, 1],
   [0, -1],
@@ -44,19 +39,19 @@ function App() {
   const [grid, setGrid] = useState(() => {
     return clearGrid()
   });
-  const [running, setRunning] = useState(false);
+  const [play, setPlay] = useState(false);
+  // const [genNum, setGenNum] = useState(0);
 
-  const runningRef = useRef(running);
-  runningRef.current = running
-  // console.log(running)
+  const runningRef = useRef(play);
+  runningRef.current = play
+  // console.log(play)
   const runGameofLife = useCallback(() => {
+    genNum = genNum + 1;
     if (!runningRef.current) {
       return;
     }
     //( b ) simulation code - Apply rules of life to determine if this cell will change states
     setGrid(g => {
-      genNum = genNum +1;
-      console.log(genNum)
       //produce will set a new copy of grid and update new copy to setgrid 
       return produce(g, nextGen => {
         for (let i = 0; i < numRows; i++) {
@@ -78,31 +73,48 @@ function App() {
             }
           }
         }
-      })
+      }) 
     })
-    setTimeout(runGameofLife, 1000);
+    
+    console.log(`genNum is ${genNum}`);
+    const dropdown = document.getElementById("set-speed");
+    const speedValue = dropdown.options[dropdown.selectedIndex].value;
+    let speed;
+    switch (speedValue) {
+      case "Fast":
+        speed = 500;
+        break;
+      case "Slow":
+        speed = 1500;
+        break;
+      case "Normal":
+      default:
+        speed = 1000;
+        break;
+    }
+    setTimeout(runGameofLife, speed);
     //send parameter is empty array so that function is only created once.
   }, []);
 
   return (
     <div className="App">
-      
+      <h1>Conway's Game of Life</h1>
       <h1>Generation: {genNum}</h1>
       <button
         onClick={() => {
-          setRunning(!running);
-          if (!running) {
+          setPlay(!play);
+          if (!play) {
             runningRef.current = true;
             runGameofLife()
-          }else{
+          } else {
             runningRef.current = false
           }
         }}
       >
-        {running ? "End" : "Begin"}
+        {play ? "End" : "Begin"}
       </button>
       <button
-        onClick={()=> {
+        onClick={() => {
           const rows = [];
           for (let i = 0; i < numRows; i++) {
             rows.push(Array.from(Array(numCols), () => Math.round(Math.random())));
@@ -116,53 +128,44 @@ function App() {
         const dropdown = document.getElementById("first-choice");
         const value = dropdown.options[dropdown.selectedIndex].value;
         const scenarios = {
-          "Glider" : [[9, 12], [10,10], [11, 11], [11, 12], [10, 12]],
-          "Blinker" : [[10, 10], [10, 11], [10, 12]],
-          "Toad" : [[10, 10], [10, 11], [10, 12], [11, 9], [11, 10], [11, 11]]
+          "Glider": [[9, 12], [10, 10], [11, 11], [11, 12], [10, 12]],
+          "Blinker": [[10, 10], [10, 11], [10, 12]],
+          "Toad": [[10, 10], [10, 11], [10, 12], [11, 9], [11, 10], [11, 11]]
         }
         setGrid(createGrid(scenarios[value]));
       }}>
-  <option selected value="base">Select Starting Point</option>
-  <option value="Glider">
-        Glider
+        <option selected value="base">Select Starting Point</option>
+        <option value="Glider">
+          Glider
    </option>
-   <option value="Blinker">
-        Blinker
+        <option value="Blinker">
+          Blinker
    </option>
-   <option value="Toad">
-        Toad
+        <option value="Toad">
+          Toad
    </option>
-</select>
-    
-<select id="set-speed" onChange={() => {
-        const dropdown = document.getElementById("set-speed");
-        const speedValue = dropdown.options[dropdown.selectedIndex].value;
-        const speedScenarios = {
-          "Slow" : setTimeout(runGameofLife, 500),
-          "Normal" : [[10, 10], [10, 11], [10, 12]],
-          "Fast" : [[10, 10], [10, 11], [10, 12], [11, 9], [11, 10], [11, 11]]
-        }
-        setGrid(createGrid(speedScenarios[speedValue]));
-      }}>
-  <option selected value="base">Select Speed</option>
-  <option value="Slow">
-        Slow
+      </select>
+
+      <select id="set-speed">
+        <option selected value="base">Select Speed</option>
+        <option value="Slow">
+          Slow
    </option>
-   <option value="Normal">
-        Normal
+        <option value="Normal">
+          Normal
    </option>
-   <option value="Fast">
-        Fast
+        <option value="Fast">
+          Fast
    </option>
-</select>
+      </select>
 
       <button
         onClick={() => {
           setGrid(clearGrid())
-          {genNum = 0}
+          { genNum = 0 }
         }}
-        >
-          Clear
+      >
+        Clear
       </button>
       <header className="App-header" style={{
         display: 'grid',
@@ -170,21 +173,21 @@ function App() {
       }}>
         {grid.map((rows, i) =>
           rows.map((col, k) =>
-            <div
+            <div className="grid"
               key={`${i}-${k}`}
-              
-              onClick={() => {
-                if(!running){
-                  const newGrid = produce(grid, gridCopy => {
-                  gridCopy[i][k] = grid[i][k] ? 0 : 1;
 
-                });
-                setGrid(newGrid)
-              }}}
+              onClick={() => {
+                if (!play) {
+                  const newGrid = produce(grid, gridCopy => {
+                    gridCopy[i][k] = grid[i][k] ? 0 : 1;
+
+                  });
+                  setGrid(newGrid)
+                }
+              }}
               style={{
-                width: 20,
-                height: 20, backgroundColor: grid[i][k] ? 'pink' : undefined,
-                border: 'solid 1px white'
+                 backgroundColor: grid[i][k] ? 'pink' : undefined,
+                 border: 'solid 1px white', borderRadius:'2px'
               }}
             />))}
       </header>
