@@ -58,16 +58,8 @@ function App() {
   //callbacks to optimized child components that rely on reference equality 
   //to prevent unnecessary renders (e.g. shouldComponentUpdate).
 
-
-
-  const runGameofLife = useCallback(() => {
-    //to check for genNum 
+  const singleGameOfLife = () => {
     genNum = genNum + 1;
-    //if not running, return - base case
-    if (!playRef.current) {
-      return;
-    }
-
     //( b ) simulation code - Apply rules of life to determine if this cell will change states
     //setgrid to change state of grid
     //g is new value of grid
@@ -104,9 +96,16 @@ function App() {
           }
         }
       })
-    })
+    });
+  }
+
+  const runGameofLife = useCallback(() => {
+    //if not running, return - base case
+    if (!playRef.current) {
+      return;
+    }
+    singleGameOfLife();
     //to be able to change the speed of the simulation
-    console.log(`genNum is ${genNum}`);
     const dropdown = document.getElementById("set-speed");
     const speedValue = dropdown.options[dropdown.selectedIndex].value;
     let speed;
@@ -144,6 +143,26 @@ function App() {
         }}
       >
         {play ? "End" : "Begin"}
+      </button>
+      <button
+        onClick={() => {
+          singleGameOfLife();
+        }}>
+        Next Generation
+      </button>
+      <input type="text" id="gen-num"/>
+      <button
+        onClick={() => {
+          const n = document.getElementById("gen-num").value;
+          if (n !== undefined) {
+            const nthValue = parseInt(n, 10);
+            for (let a = 0; a< nthValue;a++){
+              singleGameOfLife();
+            }
+          }
+        }}
+      >
+        Nth Generation
       </button>
       <button
         onClick={() => {
