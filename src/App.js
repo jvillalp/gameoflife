@@ -5,10 +5,12 @@ import './App.css';
 const numRows = 30;
 const numCols = 40;
 let genNum = 0;
+
 function createGrid(points) {
   const rows = [];
   let i = 0;
   for (i = 0; i < numRows; i++) {
+    //push columns (array) array from array(numCols), make a initital state of all zero's
     rows.push(Array.from(Array(numCols), () => 0));
   }
   var coordinate;
@@ -36,46 +38,74 @@ const clearGrid = () => {
 }
 
 function App() {
+  //useState as values will keep changing
   const [grid, setGrid] = useState(() => {
     return clearGrid()
   });
   const [play, setPlay] = useState(false);
-  // const [genNum, setGenNum] = useState(0);
 
-  const runningRef = useRef(play);
-  runningRef.current = play
+  //useRef returns a mutable ref object whose .current property is 
+  //initialized to the passed argument (initialValue). 
+  //The returned object will persist for the full lifetime of the component.
+  const playRef = useRef(play);
+  //current value is whatever is currently being looped through
+  playRef.current = play
   // console.log(play)
+
+  //Pass an inline callback and an array of dependencies. useCallback 
+  //will return a memoized version of the callback that only changes 
+  //if one of the dependencies has changed. This is useful when passing 
+  //callbacks to optimized child components that rely on reference equality 
+  //to prevent unnecessary renders (e.g. shouldComponentUpdate).
+
+
+
   const runGameofLife = useCallback(() => {
+    //to check for genNum 
     genNum = genNum + 1;
-    if (!runningRef.current) {
+    //if not running, return - base case
+    if (!playRef.current) {
       return;
     }
+
     //( b ) simulation code - Apply rules of life to determine if this cell will change states
+    //setgrid to change state of grid
+    //g is new value of grid
     setGrid(g => {
       //produce will set a new copy of grid and update new copy to setgrid 
+      //The produce function takes a function which accepts draft as an argument. 
+      //It is inside this function that we can then set the draft copy with which 
+      //we want to update our state.
+      //nextGen is what we want to copy
       return produce(g, nextGen => {
+        /* two for loops (interate) between col and rows*/
         for (let i = 0; i < numRows; i++) {
           for (let k = 0; k < numCols; k++) {
             let neigbors = 0;
+            //array of operations, in operations cols do not change
             opperations.forEach(([x, y]) => {
-              const newI = i + x;
-              const newK = k + y;
-              if (newI >= 0 && newI < numRows && newK >= 0 < numCols) {
-                neigbors += g[newI][newK]
+              const newGenI = i + x;
+              const newGenK = k + y;
+              //check bounce in corner areas - will stay alive if in the corners 
+              if (newGenI >= 0 && newGenI < numRows && newGenK >= 0 < numCols) {
+                //neigbor add to new grid copy, if live cell, will add 1 to neighbors
+                neigbors += g[newGenI][newGenK]
               }
             })
             //determines if a cell becomes zero
+            //first three rules
             if (neigbors < 2 || neigbors > 3) {
               nextGen[i][k] = 0;
               //determines if a cell becomes one
+              //4 rule - makes cell comes to live
             } else if (g[i][k] === 0 && neigbors === 3) {
               nextGen[i][k] = 1;
             }
           }
         }
-      }) 
+      })
     })
-    
+    //to be able to change the speed of the simulation
     console.log(`genNum is ${genNum}`);
     const dropdown = document.getElementById("set-speed");
     const speedValue = dropdown.options[dropdown.selectedIndex].value;
@@ -92,6 +122,8 @@ function App() {
         speed = 1000;
         break;
     }
+    /*setimeout - two params - function and speed amount in ms
+    recursive : calls itself at a set speed */
     setTimeout(runGameofLife, speed);
     //send parameter is empty array so that function is only created once.
   }, []);
@@ -104,10 +136,10 @@ function App() {
         onClick={() => {
           setPlay(!play);
           if (!play) {
-            runningRef.current = true;
+            playRef.current = true;
             runGameofLife()
           } else {
-            runningRef.current = false
+            playRef.current = false
           }
         }}
       >
@@ -169,25 +201,35 @@ function App() {
       </button>
       <header className="App-header" style={{
         display: 'grid',
+        /* gridtemplatecolumns has to parameters to show repeat of num of cols and the size (25px)*/
         gridTemplateColumns: `repeat(${numCols}, 25px)`
       }}>
+        {/* map over the createGrid funtion, 
+        rows is an array so map over that too 
+        in rows map over each col to display
+        [] map through row and index (i) */}
         {grid.map((rows, i) =>
+
           rows.map((col, k) =>
             <div className="grid"
+              /* key i is row , k is col */
               key={`${i}-${k}`}
-
+              /* onClick to click on cell and change from 0 to 1 from 1 to 0 */
               onClick={() => {
                 if (!play) {
-                  const newGrid = produce(grid, gridCopy => {
-                    gridCopy[i][k] = grid[i][k] ? 0 : 1;
-
+                  /* produce from immer : pass intital grid, and sec param as nextGen clone copy of the grid  
+                  produce will create a new grid for us */
+                  const newGenGrid = produce(grid, gridClone => {
+                    /* if alive make dead else make alive - this is to be able to toggle back and forth */
+                    gridClone[i][k] = grid[i][k] ? 0 : 1;
                   });
-                  setGrid(newGrid)
+                  /* now can set state to a new one and back and forth. */
+                  setGrid(newGenGrid)
                 }
               }}
+              /* if alive grid[i][k] or 1, cell is pink else, undefined, styling to diffrenciate 0 vs 1 */
               style={{
-                 backgroundColor: grid[i][k] ? 'pink' : undefined,
-                 border: 'solid 1px white', borderRadius:'2px'
+                backgroundColor: grid[i][k] ? 'pink' : undefined,
               }}
             />))}
       </header>
