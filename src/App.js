@@ -113,6 +113,9 @@ function App() {
       case "Fast":
         speed = 500;
         break;
+        case "Really-Fast":
+        speed = 100;
+        break;
       case "Slow":
         speed = 1500;
         break;
@@ -207,6 +210,9 @@ function App() {
    </option>
         <option value="Fast">
           Fast
+   </option>
+   <option value=" Really-Fast">
+          Really Fast
    </option>
       </select>
 
